@@ -171,7 +171,7 @@ func pay(amountInCents: Int, orderId: String) async {
     @unknown default: showPending(orderId)
     }
   } catch TapToPayError.outcomeUnknown(let orderId) {
-    // Do not retry. Wait for the webhook for this orderId.
+    // Do not retry. Check this orderId in MONEI (see "Errors").
     showPending(orderId)
   } catch {
     // See "Errors".
@@ -230,7 +230,7 @@ All calls throw `TapToPayError`.
 | `busy` | `acceptPayment` | A payment is in progress. | Wait until it ends. Disable your pay button during a payment. |
 | `cancelled` | `acceptPayment` | The user cancelled on Apple's screen. No payment occurred. | Start a new payment when the customer is ready. |
 | `sdkUpgradeRequired` | `prepare`, `acceptPayment` | MONEI blocked this SDK version. All calls fail with this error. | Update to a newer SDK version and release your app. |
-| `outcomeUnknown(orderId:)` | `acceptPayment` | The payment started, but the result is not known. The card can be charged. The SDK also throws this error for a connection loss before the card read, because it cannot always know when the loss occurred. | **Do not retry.** Show a pending state. Reconcile with the signed webhook for this `orderId`. If MONEI has no payment for this `orderId`, the card was not charged. |
+| `outcomeUnknown(orderId:)` | `acceptPayment` | The SDK cannot tell if the payment reached MONEI. The card can be charged. Causes: a connection or server error at any step of the payment, an iOS reader error that is not a card read error, or a cancelled task. Some of these occur before the card is charged, but the SDK cannot tell which. | **Do not retry, and do not charge again with a new `orderId`.** Show a pending state. Wait for the signed webhook for this `orderId`, or find the `orderId` in the MONEI Dashboard ([Payments](https://docs.monei.com/manage-account/transaction-history/), filter by order ID) or with the GraphQL API [`charges`](https://docs.monei.com/apis/graphql/operations/queries/charges/) query (`filter.orderId`). If no payment shows, this does not prove that the card was not charged. Contact MONEI support with the `orderId` before you charge the customer again. |
 | `paymentFailed(code:)` | all calls | The payment or setup failed. See the codes below. | See the codes below. |
 
 `TapToPayErrorCode` values:
