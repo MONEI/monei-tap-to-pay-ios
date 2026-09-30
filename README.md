@@ -242,7 +242,7 @@ All calls throw `TapToPayError`.
 | `locationTimeout` | The device did not get a location in 15 seconds. | Make sure that Location Services are on. Then try again. |
 | `unknown` | The payment did not start. No payment occurred. | Try again. If the error continues, contact MONEI. |
 
-`0.1.0-beta.2` only: `acceptPayment` throws `paymentFailed(code: .unknown)` or `paymentFailed(code: .readerNotReady)` for some reader errors that can occur after the card is charged, for example a card read or PIN error. Before you retry such an error, look for the `orderId` as for `outcomeUnknown(orderId:)`. From the next release, these errors throw `outcomeUnknown(orderId:)`.
+`0.1.0-beta.2` only: `acceptPayment` throws `paymentFailed(code: .unknown)`, `paymentFailed(code: .readerNotReady)` or `termsDeclined` for some reader errors that can occur after the card is charged, for example a card read, PIN or account linking error. Before you retry such an error, look for the `orderId` as for `outcomeUnknown(orderId:)`. From the next release, these errors throw `outcomeUnknown(orderId:)`.
 
 A `PaymentResult` with status `.declined` is not an error. The card was read and the issuer declined the payment. The payment is in MONEI with its `paymentId`.
 
