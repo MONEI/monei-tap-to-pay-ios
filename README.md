@@ -17,6 +17,10 @@ This repository contains the Swift package, the release binaries and an example 
   - Add `NSLocationWhenInUseUsageDescription` to `Info.plist`. The SDK needs the location of the device to accept payments.
 - A MONEI account and its API key. A test mode API key gives sandbox tokens.
 - Read access to this repository and a GitHub token (see [Install](#install)).
+- App Store privacy details. Declare these data types in App Store Connect, all for app functionality and not for tracking:
+  - Coarse location, not linked to the user (this SDK).
+  - Precise location, not linked to the user (the payment engine in this package).
+  - Device ID, linked to the user (the payment engine in this package).
 
 Use the name "Tap to Pay on iPhone" in your UI, as the Apple Human Interface Guidelines require.
 
@@ -51,6 +55,8 @@ https://github.com/MONEI/monei-tap-to-pay-ios-spm
 
 Add the `MoneiTapToPay` product to your app target.
 
+Not verified: MONEI has not tested this Xcode dialog with the private binaries yet. Verified: `xcodebuild -resolvePackageDependencies -packageAuthorizationProvider netrc` with the `~/.netrc` entry above.
+
 In `Package.swift`:
 
 ```swift
@@ -70,6 +76,8 @@ Use `exact:` for 0.x versions. From 1.0.0, use `from:`.
 
 CI needs the same two things. Keep the token in a secret. Never commit it.
 
+Not verified: MONEI has not run the GitHub Actions and Xcode Cloud setups below yet. Tell MONEI if they do not work for you.
+
 **GitHub Actions.** The default `GITHUB_TOKEN` cannot read this repository. Write a netrc file from a secret before the build:
 
 ```yaml
@@ -82,7 +90,7 @@ CI needs the same two things. Keep the token in a secret. Never commit it.
     chmod 600 ~/.netrc
 ```
 
-The `github.com` entry gives git access. The `api.github.com` entry gives access to the binaries. Run `xcodebuild` with `-scmProvider system`, so that it uses git and the netrc file.
+The `github.com` entry gives git access. The `api.github.com` entry gives access to the binaries. Run `xcodebuild` with `-scmProvider system -packageAuthorizationProvider netrc`, so that it uses git and the netrc file.
 
 **Xcode Cloud.**
 
@@ -127,7 +135,7 @@ Rules:
 
 - **One token for each device.** Cache the token for each device.
 - **Renew before expiry.** A token is valid for 24 hours. Get a new token before it expires. Then call `prepare` again with the new token.
-- **Several MONEI accounts.** If you have more than one MONEI account (for example, separate legal entities), each device uses the API key of the account that its store belongs to.
+- **Several MONEI accounts.** If you have more than one MONEI account (for example, separate legal entities), each device uses the API key of the account that its store belongs to. Use one account on each device. MONEI has not tested a switch to another account on one device yet.
 - **Test and live.** A test mode API key gives a sandbox token. A live API key gives a live token. Do not mix test and live tokens on one device.
 
 API reference: https://docs.monei.com/apis/rest/pos-auth-token-create/
@@ -179,15 +187,16 @@ func pay(amountInCents: Int, orderId: String) async {
 | `TapToPay.prepare(token: String) async throws` | Stores the token and prepares the reader in the background. It does not show Apple's terms. It asks for location permission if the user did not answer yet. Call it on launch and after each token renewal. |
 | `TapToPay.acceptPayment(amount: Int, orderId: String, callbackUrl: URL?) async throws -> PaymentResult` | Takes one card payment. `amount` is in euro cents and must be more than 0. `orderId` is your own reference and must not be empty. |
 | `TapToPay.presentEducation(from: UIViewController) async throws` | Shows Apple's screens that teach how to tap a card. |
-| `PaymentResult` | `paymentId` (MONEI payment ID), `status` (`.approved` or `.declined`), `cardBrand` (lowercase brand, for example `visa`, or `nil`), `last4` (or `nil`), `orderId`. |
+| `PaymentResult` | `paymentId` (MONEI payment ID), `status` (`.approved` or `.declined`), `cardBrand` (the card network name in lowercase, for example `visa` or `amex`; `unknown` for a network the SDK does not know; or `nil`), `last4` (or `nil`), `orderId`. |
 
 ### Payment flow
 
 1. Call `prepare` on launch. The token stays in memory only, so call `prepare` again after each launch.
 2. Call `acceptPayment` with your own `orderId`. Use a new, non-empty `orderId` for each order. MONEI stores it with the payment, and you use it to reconcile.
-3. The first `acceptPayment` on a device shows Apple's Tap to Pay on iPhone terms if the account is not linked yet.
-4. Apple shows the tap screen. The customer taps the card.
-5. `acceptPayment` returns a `PaymentResult` or throws a `TapToPayError`.
+3. The SDK needs a location fix to prepare the reader. The first `prepare` or `acceptPayment` after launch waits up to 15 seconds for it.
+4. The first `acceptPayment` on a device shows Apple's Tap to Pay on iPhone terms if the account is not linked yet.
+5. Apple shows the tap screen. The customer taps the card.
+6. `acceptPayment` returns a `PaymentResult` or throws a `TapToPayError`.
 
 The SDK prepares the reader again when the app comes back to the foreground. You do not need to do this.
 
@@ -212,7 +221,7 @@ All calls throw `TapToPayError`.
 | Error | Thrown by | Meaning | What to do |
 |---|---|---|---|
 | `notSupported` | all calls | The device or iOS version does not support Tap to Pay on iPhone. | Hide Tap to Pay on iPhone. |
-| `locationDenied` | `prepare`, `acceptPayment` | The user did not allow location access. | Tell the user to allow location access in Settings. Then try again. |
+| `locationDenied` | `prepare`, `acceptPayment` | The user did not allow location access, or did not answer the permission prompt in 15 seconds. | Tell the user to allow location access in Settings. Then try again. |
 | `termsDeclined` | `acceptPayment` | The user did not accept Apple's terms, or linking failed. | Tell the user that the terms are necessary. The next `acceptPayment` shows the terms again. |
 | `invalidArgument` | `acceptPayment` | `amount` is 0 or less, or `orderId` is empty. | Correct the value. |
 | `tokenExpired` | `prepare`, `acceptPayment` | The token expired. | Get a new token from your server. Call `prepare`. Then try again. |

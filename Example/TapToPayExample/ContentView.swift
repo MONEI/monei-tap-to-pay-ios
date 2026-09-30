@@ -48,6 +48,7 @@ struct ContentView: View {
     do {
       // A real app calls prepare on launch and again with each refreshed token.
       try await TapToPay.prepare(token: token)
+      // This example has no server for the webhook. A real app always passes its webhook URL.
       let result = try await TapToPay.acceptPayment(
         amount: Int(amount) ?? 0, orderId: orderId, callbackUrl: nil)
       let status =
