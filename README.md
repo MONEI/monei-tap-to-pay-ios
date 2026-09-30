@@ -230,7 +230,7 @@ All calls throw `TapToPayError`.
 | `busy` | `acceptPayment` | A payment is in progress. | Wait until it ends. Disable your pay button during a payment. |
 | `cancelled` | `acceptPayment` | The user cancelled on Apple's screen. No payment occurred. | Start a new payment when the customer is ready. |
 | `sdkUpgradeRequired` | `prepare`, `acceptPayment` | MONEI blocked this SDK version. All calls fail with this error. | Update to a newer SDK version and release your app. |
-| `outcomeUnknown(orderId:)` | `acceptPayment` | The card was read, but the result is not known. The card can be charged. | **Do not retry.** Show a pending state. Reconcile with the signed webhook for this `orderId`. |
+| `outcomeUnknown(orderId:)` | `acceptPayment` | The payment started, but the result is not known. The card can be charged. The SDK also throws this error for a connection loss before the card read, because it cannot always know when the loss occurred. | **Do not retry.** Show a pending state. Reconcile with the signed webhook for this `orderId`. If MONEI has no payment for this `orderId`, the card was not charged. |
 | `paymentFailed(code:)` | all calls | The payment or setup failed. See the codes below. | See the codes below. |
 
 `TapToPayErrorCode` values:
@@ -240,7 +240,7 @@ All calls throw `TapToPayError`.
 | `cardDeclined` | The card was declined during the read. No payment occurred. | Ask for a different card. |
 | `readerNotReady` | The reader session was not ready or expired. | Try again. The SDK prepares the reader again on the next call. |
 | `locationTimeout` | The device did not get a location in 15 seconds. | Make sure that Location Services are on. Then try again. |
-| `unknown` | An error occurred before the card was read. | Try again. If the error continues, contact MONEI. |
+| `unknown` | The payment did not start, or the card read failed. No payment occurred. | Try again. If the error continues, contact MONEI. |
 
 A `PaymentResult` with status `.declined` is not an error. The card was read and the issuer declined the payment. The payment is in MONEI with its `paymentId`.
 
