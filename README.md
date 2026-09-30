@@ -61,7 +61,7 @@ In `Package.swift`:
 
 ```swift
 dependencies: [
-  .package(url: "https://github.com/MONEI/monei-tap-to-pay-ios-spm", exact: "0.1.0-beta.2")
+  .package(url: "https://github.com/MONEI/monei-tap-to-pay-ios-spm", exact: "0.1.0-beta.3")
 ],
 targets: [
   .target(name: "YourApp", dependencies: [
@@ -242,8 +242,6 @@ All calls throw `TapToPayError`.
 | `locationTimeout` | The device did not get a location in 15 seconds. | Make sure that Location Services are on. Then try again. |
 | `unknown` | The payment did not start. No payment occurred. | Try again. If the error continues, contact MONEI. |
 
-`0.1.0-beta.2` only: `acceptPayment` throws `paymentFailed(code: .unknown)`, `paymentFailed(code: .readerNotReady)` or `termsDeclined` for some reader errors that can occur after the card is charged, for example a card read, PIN or account linking error. Before you retry such an error, look for the `orderId` as for `outcomeUnknown(orderId:)`. From the next release, these errors throw `outcomeUnknown(orderId:)`.
-
 A `PaymentResult` with status `.declined` is not an error. The card was read and the issuer declined the payment. The payment is in MONEI with its `paymentId`.
 
 ## Versioning
@@ -255,11 +253,11 @@ The SDK uses semantic versioning (`MAJOR.MINOR.PATCH`).
 - **Major:** a change in error semantics, or a change that breaks your code.
 - **0.x prereleases** are for internal testing only. Do not ship them to production.
 
-Production releases have a signed `MoneiTapToPay` binary. `0.1.0-beta.2` is not signed.
+Production releases have a signed `MoneiTapToPay` binary. `0.1.0-beta.3` is not signed.
 
 | SDK version | iOS minimum | Built with | Notes |
 |---|---|---|---|
-| `0.1.0-beta.2` | 18.5 | Xcode 27.0 (Swift 6.4) | Prerelease for internal testing. Not signed. |
+| `0.1.0-beta.3` | 18.5 | Xcode 27.0 (Swift 6.4) | Prerelease for internal testing. Not signed. |
 
 Use the same Xcode version as "Built with", or a newer one.
 
