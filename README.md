@@ -61,7 +61,7 @@ In `Package.swift`:
 
 ```swift
 dependencies: [
-  .package(url: "https://github.com/MONEI/monei-tap-to-pay-ios-spm", exact: "0.1.0-beta.1")
+  .package(url: "https://github.com/MONEI/monei-tap-to-pay-ios-spm", exact: "0.1.0-beta.2")
 ],
 targets: [
   .target(name: "YourApp", dependencies: [
@@ -253,11 +253,11 @@ The SDK uses semantic versioning (`MAJOR.MINOR.PATCH`).
 - **Major:** a change in error semantics, or a change that breaks your code.
 - **0.x prereleases** are for internal testing only. Do not ship them to production.
 
-Production releases have a signed `MoneiTapToPay` binary. `0.1.0-beta.1` is not signed.
+Production releases have a signed `MoneiTapToPay` binary. `0.1.0-beta.2` is not signed.
 
 | SDK version | iOS minimum | Built with | Notes |
 |---|---|---|---|
-| `0.1.0-beta.1` | 18.5 | Xcode 27.0 (Swift 6.4) | Prerelease for internal testing. Not signed. |
+| `0.1.0-beta.2` | 18.5 | Xcode 27.0 (Swift 6.4) | Prerelease for internal testing. Not signed. |
 
 Use the same Xcode version as "Built with", or a newer one.
 
