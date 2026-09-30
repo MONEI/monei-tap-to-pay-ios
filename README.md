@@ -230,7 +230,7 @@ All calls throw `TapToPayError`.
 | `busy` | `acceptPayment` | A payment is in progress. | Wait until it ends. Disable your pay button during a payment. |
 | `cancelled` | `acceptPayment` | The user cancelled on Apple's screen. No payment occurred. | Start a new payment when the customer is ready. |
 | `sdkUpgradeRequired` | `prepare`, `acceptPayment` | MONEI blocked this SDK version. All calls fail with this error. | Update to a newer SDK version and release your app. |
-| `outcomeUnknown(orderId:)` | `acceptPayment` | The SDK cannot tell if the payment reached MONEI. The card can be charged. Causes: a connection or server error at any step of the payment, an iOS reader error that is not a card read error, or a cancelled task. Some of these occur before the card is charged, but the SDK cannot tell which. | **Do not retry, and do not charge again with a new `orderId`.** Show a pending state. Wait for the signed webhook for this `orderId`, or find the `orderId` in the MONEI Dashboard ([Payments](https://docs.monei.com/manage-account/transaction-history/), filter by order ID) or with the GraphQL API [`charges`](https://docs.monei.com/apis/graphql/operations/queries/charges/) query (`filter.orderId`). If no payment shows, this does not prove that the card was not charged. Contact MONEI support with the `orderId` before you charge the customer again. |
+| `outcomeUnknown(orderId:)` | `acceptPayment` | The SDK cannot tell if the payment reached MONEI. The card can be charged. Causes: a connection or server error at any step of the payment, most iOS reader errors (also a card read or PIN error), or a cancelled task. Some of these occur before the card is charged, but the SDK cannot tell which. | **Do not retry, and do not charge again with a new `orderId`.** Show a pending state. Wait for the signed webhook for this `orderId`, or find the `orderId` in the MONEI Dashboard ([Payments](https://docs.monei.com/manage-account/transaction-history/), filter by order ID) or with the GraphQL API [`charges`](https://docs.monei.com/apis/graphql/operations/queries/charges/) query (`filter.orderId`). If no payment shows, this does not prove that the card was not charged. Contact MONEI support with the `orderId` before you charge the customer again. |
 | `paymentFailed(code:)` | all calls | The payment or setup failed. See the codes below. | See the codes below. |
 
 `TapToPayErrorCode` values:
@@ -240,7 +240,9 @@ All calls throw `TapToPayError`.
 | `cardDeclined` | The card was declined during the read. No payment occurred. | Ask for a different card. |
 | `readerNotReady` | The reader session was not ready or expired. | Try again. The SDK prepares the reader again on the next call. |
 | `locationTimeout` | The device did not get a location in 15 seconds. | Make sure that Location Services are on. Then try again. |
-| `unknown` | The payment did not start, or the card read failed. No payment occurred. | Try again. If the error continues, contact MONEI. |
+| `unknown` | The payment did not start. No payment occurred. | Try again. If the error continues, contact MONEI. |
+
+`0.1.0-beta.2` only: `acceptPayment` throws `paymentFailed(code: .unknown)` or `paymentFailed(code: .readerNotReady)` for some reader errors that can occur after the card is charged, for example a card read or PIN error. Before you retry such an error, look for the `orderId` as for `outcomeUnknown(orderId:)`. From the next release, these errors throw `outcomeUnknown(orderId:)`.
 
 A `PaymentResult` with status `.declined` is not an error. The card was read and the issuer declined the payment. The payment is in MONEI with its `paymentId`.
 
