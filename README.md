@@ -61,7 +61,7 @@ In `Package.swift`:
 
 ```swift
 dependencies: [
-  .package(url: "https://github.com/MONEI/monei-tap-to-pay-ios-spm", exact: "0.1.0-beta.3")
+  .package(url: "https://github.com/MONEI/monei-tap-to-pay-ios-spm", exact: "0.1.0-beta.4")
 ],
 targets: [
   .target(name: "YourApp", dependencies: [
@@ -221,7 +221,7 @@ All calls throw `TapToPayError`.
 | Error | Thrown by | Meaning | What to do |
 |---|---|---|---|
 | `notSupported` | all calls | The device or iOS version does not support Tap to Pay on iPhone. | Hide Tap to Pay on iPhone. |
-| `locationDenied` | `prepare`, `acceptPayment` | The user did not allow location access, or did not answer the permission prompt in 15 seconds. | Tell the user to allow location access in Settings. Then try again. |
+| `locationDenied` | `prepare`, `acceptPayment` | The user did not allow location access, or `Info.plist` has no `NSLocationWhenInUseUsageDescription`. | Tell the user to allow location access in Settings. Then try again. |
 | `termsDeclined` | `acceptPayment` | The user did not accept Apple's terms, or linking failed. | Tell the user that the terms are necessary. The next `acceptPayment` shows the terms again. |
 | `invalidArgument` | `acceptPayment` | `amount` is 0 or less, or `orderId` is empty. | Correct the value. |
 | `tokenExpired` | `prepare`, `acceptPayment` | The token expired. | Get a new token from your server. Call `prepare`. Then try again. |
@@ -253,10 +253,11 @@ The SDK uses semantic versioning (`MAJOR.MINOR.PATCH`).
 - **Major:** a change in error semantics, or a change that breaks your code.
 - **0.x prereleases** are for internal testing only. Do not ship them to production.
 
-Production releases have a signed `MoneiTapToPay` binary. `0.1.0-beta.3` is not signed.
+Releases from `0.1.0-beta.4` have a signed `MoneiTapToPay` binary (team `72J3PXJJ4K`). `0.1.0-beta.3` is not signed.
 
 | SDK version | iOS minimum | Built with | Notes |
 |---|---|---|---|
+| `0.1.0-beta.4` | 18.5 | Xcode 26.6 | Prerelease for internal testing. Signed. |
 | `0.1.0-beta.3` | 18.5 | Xcode 27.0 (Swift 6.4) | Prerelease for internal testing. Not signed. |
 
 Use the same Xcode version as "Built with", or a newer one.
