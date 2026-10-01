@@ -63,7 +63,7 @@ In `Package.swift`:
 
 ```swift
 dependencies: [
-  .package(url: "https://github.com/MONEI/monei-tap-to-pay-ios", exact: "0.1.0-beta.5")
+  .package(url: "https://github.com/MONEI/monei-tap-to-pay-ios", exact: "0.1.0")
 ],
 targets: [
   .target(name: "YourApp", dependencies: [
@@ -253,12 +253,14 @@ The SDK uses semantic versioning (`MAJOR.MINOR.PATCH`).
 - **Patch:** bug fixes. No change to the public API or to error semantics.
 - **Minor:** the same public API with a new version of the internal payment engine, or new API that does not break your code.
 - **Major:** a change in error semantics, or a change that breaks your code.
-- **0.x prereleases** are for internal testing only. Do not ship them to production.
+- **0.x versions:** until 1.0.0, a minor version (0.2.0) can change the public API. Use `exact:` and read the notes before you update.
+- **Prereleases** (`-beta.N`) are for testing only. Do not ship them to production.
 
 Releases from `0.1.0-beta.4` have a signed `MoneiTapToPay` binary (team `72J3PXJJ4K`). `0.1.0-beta.3` is not signed.
 
 | SDK version | iOS minimum | Built with | Notes |
 |---|---|---|---|
+| `0.1.0` | 18.5 | Xcode 26.6 (Swift 6.3.3) | First release. Signed. Same code as `0.1.0-beta.5`. |
 | `0.1.0-beta.5` | 18.5 | Xcode 26.6 (Swift 6.3.3) | Prerelease for internal testing. Signed. First release of the repo under its new name. |
 | `0.1.0-beta.4` | 18.5 | Xcode 26.6 (Swift 6.3.3) | Prerelease for internal testing. Signed. |
 | `0.1.0-beta.3` | 18.5 | Xcode 27.0 (Swift 6.4) | Prerelease for internal testing. Not signed. |
