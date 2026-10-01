@@ -223,7 +223,7 @@ All calls throw `TapToPayError`.
 | Error | Thrown by | Meaning | What to do |
 |---|---|---|---|
 | `notSupported` | all calls | The device or iOS version does not support Tap to Pay on iPhone. | Hide Tap to Pay on iPhone. |
-| `locationDenied` | `prepare`, `acceptPayment` | The user did not allow location access, or `Info.plist` has no `NSLocationWhenInUseUsageDescription`. | Tell the user to allow location access in Settings. Then try again. |
+| `locationDenied` | `prepare`, `acceptPayment` | The user did not allow location access, or `Info.plist` has no `NSLocationWhenInUseUsageDescription`. | If the user did not allow access: tell the user to allow location access in Settings, then try again. If the key is missing: add it to `Info.plist` and release a corrected app. |
 | `termsDeclined` | `acceptPayment` | The user did not accept Apple's terms, or linking failed. | Tell the user that the terms are necessary. The next `acceptPayment` shows the terms again. |
 | `invalidArgument` | `acceptPayment` | `amount` is 0 or less, or `orderId` is empty. | Correct the value. |
 | `tokenExpired` | `prepare`, `acceptPayment` | The token expired. | Get a new token from your server. Call `prepare`. Then try again. |
