@@ -28,7 +28,7 @@ Use the name "Tap to Pay on iPhone" in your UI, as the Apple Human Interface Gui
 
 The package is public. Swift Package Manager downloads the binaries from the release of each version. No GitHub account or token is necessary, also not in CI.
 
-In Xcode, select **File > Add Package Dependencies**, enter the URL below, set the dependency rule to **Exact Version** `0.1.1`, and add the `MoneiTapToPay` product to your app target:
+In Xcode, select **File > Add Package Dependencies**, enter the URL below, set the dependency rule to **Exact Version** `0.2.0`, and add the `MoneiTapToPay` product to your app target:
 
 ```
 https://github.com/MONEI/monei-tap-to-pay-ios
@@ -38,7 +38,7 @@ In `Package.swift`:
 
 ```swift
 dependencies: [
-  .package(url: "https://github.com/MONEI/monei-tap-to-pay-ios", exact: "0.1.1")
+  .package(url: "https://github.com/MONEI/monei-tap-to-pay-ios", exact: "0.2.0")
 ],
 targets: [
   .target(name: "YourApp", dependencies: [
@@ -135,7 +135,7 @@ func pay(amountInCents: Int, orderId: String) async {
 | `TapToPay.prepare(token: String) async throws` | Stores the token and prepares the reader in the background. It does not show Apple's terms. It asks for location permission if the user did not answer yet. Call it on launch and after each token renewal. |
 | `TapToPay.acceptPayment(amount: Int, orderId: String, callbackUrl: URL?) async throws -> PaymentResult` | Takes one card payment. `amount` is in euro cents and must be more than 0. `orderId` is your own reference and must not be empty. |
 | `TapToPay.presentEducation(from: UIViewController) async throws` | Shows Apple's screens that teach how to tap a card. |
-| `PaymentResult` | `paymentId` (MONEI payment ID), `status` (`.approved` or `.declined`), `cardBrand` (the card network name in lowercase, for example `visa` or `amex`; `unknown` for a network the SDK does not know; or `nil`), `last4` (or `nil`), `orderId`. |
+| `PaymentResult` | `paymentId` (MONEI payment ID), `status` (`.approved` or `.declined`), `cardBrand` (the card network name in lowercase, for example `visa` or `amex`; `unknown` for a network the SDK does not know; or `nil`), `last4` (or `nil`), `orderId`, `amount` (in cents), `currency` (ISO 4217, for example `EUR`), `statusCode` and `statusMessage` (the MONEI status code and its text, for example `E000`; a declined result also has the reason, for example insufficient funds; or `nil`), `authorizationCode` (approved results only; or `nil`), `cardType` (`credit`, `debit` or `prepaid`; or `nil`), `cardCountry` (ISO 3166-1 alpha-2, for example `ES`; or `nil`). Only `status` tells you if the payment is approved. Use the other fields to show the result. |
 
 ### Payment flow
 
@@ -206,6 +206,7 @@ Releases from `0.1.0-beta.4` have a signed `MoneiTapToPay` binary (team `72J3PXJ
 
 | SDK version | iOS minimum | Built with | Notes |
 |---|---|---|---|
+| `0.2.0` | 18.5 | Xcode 26.6 (Swift 6.3.3) | `PaymentResult` has new fields: `amount`, `currency`, `statusCode`, `statusMessage`, `authorizationCode`, `cardType`, `cardCountry`. A declined result shows the reason without a call to MONEI. No change to existing fields. |
 | `0.1.1` | 18.5 | Xcode 26.6 (Swift 6.3.3) | Install without a GitHub token: public download URLs. Same SDK code as `0.1.0`. |
 | `0.1.0` | 18.5 | Xcode 26.6 (Swift 6.3.3) | First release. Signed. Same code as `0.1.0-beta.5`. |
 | `0.1.0-beta.5` | 18.5 | Xcode 26.6 (Swift 6.3.3) | Prerelease for internal testing. Signed. First release of the repo under its new name. |
