@@ -6,17 +6,17 @@ This repository contains the Swift package, the release binaries and an example 
 
 ## Requirements
 
-- iOS 18.5 or later.
-- iPhone XS or newer. `TapToPay.isSupported` is `false` on other devices.
-- The Tap to Pay on iPhone entitlement from Apple:
-  1. Request the development entitlement from Apple for your team.
+- iOS 18.5 or later, on an iPhone XS or newer. `TapToPay.isSupported` is `false` on other devices.
+- Xcode 26.6 or newer.
+- The Tap to Pay on iPhone entitlement from Apple, for each app that takes payments. Request it with Apple's [entitlement request form](https://developer.apple.com/contact/request/tap-to-pay-on-iphone/):
+  1. Request the development entitlement for your team. You need it before you can test on a device.
   2. Build and test your payment flow with it.
   3. Request the publishing entitlement. Apple asks for screenshots or a video of your payment flow.
+- Send MONEI your Apple Team ID and the bundle ID of each app that takes payments. App extensions that never take payments (for example a widget) do not need the entitlement.
 - In your app target:
   - Add the entitlement key `com.apple.developer.proximity-reader.payment.acceptance` with the value `true` to the `.entitlements` file.
   - Add `NSLocationWhenInUseUsageDescription` to `Info.plist`. The SDK needs the location of the device to accept payments.
 - A MONEI account and its API key. A test mode API key gives sandbox tokens.
-- Read access to this repository and a GitHub token (see [Install](#install)).
 - App Store privacy details. Declare these data types in App Store Connect, all for app functionality and not for tracking:
   - Coarse location, not linked to the user (this SDK).
   - Precise location, not linked to the user (the payment engine in this package).
@@ -26,44 +26,19 @@ Use the name "Tap to Pay on iPhone" in your UI, as the Apple Human Interface Gui
 
 ## Install
 
-The package is private. The binaries are private release assets. You need two things:
+The package is public. Swift Package Manager downloads the binaries from the release of each version. No GitHub account or token is necessary, also not in CI.
 
-1. **Git read access** to `MONEI/monei-tap-to-pay-ios`. Ask MONEI to give access to your GitHub account.
-2. **A `~/.netrc` entry for `api.github.com`.** Swift Package Manager downloads the binaries from the GitHub API with this entry.
-
-Create a GitHub personal access token (classic) with the `repo` scope. Fine-grained tokens do not work for outside collaborators on organization repositories. Then add this to `~/.netrc`:
-
-```
-machine api.github.com
-  login <your-github-username>
-  password <your-github-token>
-```
-
-Set the file permissions to `600`:
-
-```sh
-chmod 600 ~/.netrc
-```
-
-### Add the package
-
-In Xcode, select **File > Add Package Dependencies** and enter:
+In Xcode, select **File > Add Package Dependencies**, enter the URL below, set the dependency rule to **Exact Version** `0.1.1`, and add the `MoneiTapToPay` product to your app target:
 
 ```
 https://github.com/MONEI/monei-tap-to-pay-ios
 ```
 
-Add the `MoneiTapToPay` product to your app target.
-
-Until 2026-10-01 this repo was `MONEI/monei-tap-to-pay-ios-spm`. GitHub redirects the old URL, but the package identity changed. If you added the package with the old URL, remove it and add it again with the URL above.
-
-Not verified: MONEI has not tested this Xcode dialog with the private binaries yet. Verified: `xcodebuild -resolvePackageDependencies -packageAuthorizationProvider netrc` with the `~/.netrc` entry above.
-
 In `Package.swift`:
 
 ```swift
 dependencies: [
-  .package(url: "https://github.com/MONEI/monei-tap-to-pay-ios", exact: "0.1.0")
+  .package(url: "https://github.com/MONEI/monei-tap-to-pay-ios", exact: "0.1.1")
 ],
 targets: [
   .target(name: "YourApp", dependencies: [
@@ -74,38 +49,9 @@ targets: [
 
 Use `exact:` for 0.x versions. From 1.0.0, use `from:`.
 
-### CI
+Use `0.1.1` or later. Earlier versions download their binaries through the GitHub API, which needs a GitHub token.
 
-CI needs the same two things. Keep the token in a secret. Never commit it.
-
-Not verified: MONEI has not run the GitHub Actions and Xcode Cloud setups below yet. Tell MONEI if they do not work for you.
-
-**GitHub Actions.** The default `GITHUB_TOKEN` cannot read this repository. Write a netrc file from a secret before the build:
-
-```yaml
-- name: Write netrc for MONEI Tap to Pay
-  env:
-    MONEI_TTP_TOKEN: ${{ secrets.MONEI_TTP_TOKEN }}
-  run: |
-    printf 'machine github.com\n  login x-access-token\n  password %s\nmachine api.github.com\n  login x-access-token\n  password %s\n' \
-      "$MONEI_TTP_TOKEN" "$MONEI_TTP_TOKEN" > ~/.netrc
-    chmod 600 ~/.netrc
-```
-
-The `github.com` entry gives git access. The `api.github.com` entry gives access to the binaries. Run `xcodebuild` with `-scmProvider system -packageAuthorizationProvider netrc`, so that it uses git and the netrc file.
-
-**Xcode Cloud.**
-
-1. In App Store Connect, give Xcode Cloud access to `MONEI/monei-tap-to-pay-ios` as an additional repository.
-2. Add a secret environment variable to the workflow, for example `MONEI_TTP_TOKEN`.
-3. Add `ci_scripts/ci_post_clone.sh` to your repository. Make it executable. Xcode Cloud runs it before it resolves packages.
-
-```sh
-#!/bin/sh
-set -e
-printf 'machine api.github.com\n  login x-access-token\n  password %s\n' "$MONEI_TTP_TOKEN" > ~/.netrc
-chmod 600 ~/.netrc
-```
+Until 2026-10-01 this repo was `MONEI/monei-tap-to-pay-ios-spm`. If you added the package with that URL, remove it and add it again with the URL above: the package identity changed.
 
 ## Backend: get a token
 
@@ -260,6 +206,7 @@ Releases from `0.1.0-beta.4` have a signed `MoneiTapToPay` binary (team `72J3PXJ
 
 | SDK version | iOS minimum | Built with | Notes |
 |---|---|---|---|
+| `0.1.1` | 18.5 | Xcode 26.6 (Swift 6.3.3) | Install without a GitHub token: public download URLs. Same SDK code as `0.1.0`. |
 | `0.1.0` | 18.5 | Xcode 26.6 (Swift 6.3.3) | First release. Signed. Same code as `0.1.0-beta.5`. |
 | `0.1.0-beta.5` | 18.5 | Xcode 26.6 (Swift 6.3.3) | Prerelease for internal testing. Signed. First release of the repo under its new name. |
 | `0.1.0-beta.4` | 18.5 | Xcode 26.6 (Swift 6.3.3) | Prerelease for internal testing. Signed. |
