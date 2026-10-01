@@ -257,7 +257,7 @@ Releases from `0.1.0-beta.4` have a signed `MoneiTapToPay` binary (team `72J3PXJ
 
 | SDK version | iOS minimum | Built with | Notes |
 |---|---|---|---|
-| `0.1.0-beta.4` | 18.5 | Xcode 26.6 | Prerelease for internal testing. Signed. |
+| `0.1.0-beta.4` | 18.5 | Xcode 26.6 (Swift 6.3.3) | Prerelease for internal testing. Signed. |
 | `0.1.0-beta.3` | 18.5 | Xcode 27.0 (Swift 6.4) | Prerelease for internal testing. Not signed. |
 
 Use the same Xcode version as "Built with", or a newer one.
