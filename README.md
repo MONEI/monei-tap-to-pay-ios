@@ -12,6 +12,7 @@ This repository contains the Swift package, the release binaries and an example 
   1. Request the development entitlement for your team. You need it before you can test on a device.
   2. Build and test your payment flow with it.
   3. Request the publishing entitlement. Apple asks for screenshots or a video of your payment flow.
+
   App extensions that never take payments (for example a widget) do not need the entitlement.
 - In your app target:
   - Add the entitlement key `com.apple.developer.proximity-reader.payment.acceptance` with the value `true` to the `.entitlements` file.
