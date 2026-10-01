@@ -16,7 +16,7 @@
 		22F5DCDDAAA40808F7447E38 /* TapToPayExampleApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TapToPayExampleApp.swift; sourceTree = "<group>"; };
 		64ED0CD15A6BD7C8856B750E /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		695B01BB9D90B9E8A8BE7380 /* TapToPayExample.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = TapToPayExample.entitlements; sourceTree = "<group>"; };
-		C3C88EAB6D7ABB92774A9260 /* monei-tap-to-pay-ios-spm */ = {isa = PBXFileReference; lastKnownFileType = folder; name = "monei-tap-to-pay-ios-spm"; path = ..; sourceTree = SOURCE_ROOT; };
+		C3C88EAB6D7ABB92774A9260 /* monei-tap-to-pay-ios */ = {isa = PBXFileReference; lastKnownFileType = folder; name = "monei-tap-to-pay-ios"; path = ..; sourceTree = SOURCE_ROOT; };
 		D93F8F14EAC82BB9A665ABF7 /* TapToPayExample.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = TapToPayExample.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -35,7 +35,7 @@
 		71AFA69B5A45EDD85A5FECE4 /* Packages */ = {
 			isa = PBXGroup;
 			children = (
-				C3C88EAB6D7ABB92774A9260 /* monei-tap-to-pay-ios-spm */,
+				C3C88EAB6D7ABB92774A9260 /* monei-tap-to-pay-ios */,
 			);
 			name = Packages;
 			sourceTree = "<group>";

@@ -28,7 +28,7 @@ Use the name "Tap to Pay on iPhone" in your UI, as the Apple Human Interface Gui
 
 The package is private. The binaries are private release assets. You need two things:
 
-1. **Git read access** to `MONEI/monei-tap-to-pay-ios-spm`. Ask MONEI to give access to your GitHub account.
+1. **Git read access** to `MONEI/monei-tap-to-pay-ios`. Ask MONEI to give access to your GitHub account.
 2. **A `~/.netrc` entry for `api.github.com`.** Swift Package Manager downloads the binaries from the GitHub API with this entry.
 
 Create a GitHub personal access token (classic) with the `repo` scope. Fine-grained tokens do not work for outside collaborators on organization repositories. Then add this to `~/.netrc`:
@@ -50,10 +50,12 @@ chmod 600 ~/.netrc
 In Xcode, select **File > Add Package Dependencies** and enter:
 
 ```
-https://github.com/MONEI/monei-tap-to-pay-ios-spm
+https://github.com/MONEI/monei-tap-to-pay-ios
 ```
 
 Add the `MoneiTapToPay` product to your app target.
+
+Until 2026-10-01 this repo was `MONEI/monei-tap-to-pay-ios-spm`. GitHub redirects the old URL, but the package identity changed. If you added the package with the old URL, remove it and add it again with the URL above.
 
 Not verified: MONEI has not tested this Xcode dialog with the private binaries yet. Verified: `xcodebuild -resolvePackageDependencies -packageAuthorizationProvider netrc` with the `~/.netrc` entry above.
 
@@ -61,11 +63,11 @@ In `Package.swift`:
 
 ```swift
 dependencies: [
-  .package(url: "https://github.com/MONEI/monei-tap-to-pay-ios-spm", exact: "0.1.0-beta.4")
+  .package(url: "https://github.com/MONEI/monei-tap-to-pay-ios", exact: "0.1.0-beta.5")
 ],
 targets: [
   .target(name: "YourApp", dependencies: [
-    .product(name: "MoneiTapToPay", package: "monei-tap-to-pay-ios-spm")
+    .product(name: "MoneiTapToPay", package: "monei-tap-to-pay-ios")
   ])
 ]
 ```
@@ -94,7 +96,7 @@ The `github.com` entry gives git access. The `api.github.com` entry gives access
 
 **Xcode Cloud.**
 
-1. In App Store Connect, give Xcode Cloud access to `MONEI/monei-tap-to-pay-ios-spm` as an additional repository.
+1. In App Store Connect, give Xcode Cloud access to `MONEI/monei-tap-to-pay-ios` as an additional repository.
 2. Add a secret environment variable to the workflow, for example `MONEI_TTP_TOKEN`.
 3. Add `ci_scripts/ci_post_clone.sh` to your repository. Make it executable. Xcode Cloud runs it before it resolves packages.
 
@@ -257,6 +259,7 @@ Releases from `0.1.0-beta.4` have a signed `MoneiTapToPay` binary (team `72J3PXJ
 
 | SDK version | iOS minimum | Built with | Notes |
 |---|---|---|---|
+| `0.1.0-beta.5` | 18.5 | Xcode 26.6 (Swift 6.3.3) | Prerelease for internal testing. Signed. First release of the repo under its new name. |
 | `0.1.0-beta.4` | 18.5 | Xcode 26.6 (Swift 6.3.3) | Prerelease for internal testing. Signed. |
 | `0.1.0-beta.3` | 18.5 | Xcode 27.0 (Swift 6.4) | Prerelease for internal testing. Not signed. |
 
