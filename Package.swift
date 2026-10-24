@@ -10,13 +10,13 @@ let package = Package(
   targets: [
     .binaryTarget(
       name: "MoneiTapToPay",
-      url: "https://github.com/MONEI/monei-tap-to-pay-ios/releases/download/0.2.0/MoneiTapToPay.xcframework.zip",
-      checksum: "bd4738e6c64f580fd50260ec959b16577c54a04a4fa16c3750af89cc1b8bdfcf"
+      url: "https://github.com/MONEI/monei-tap-to-pay-ios/releases/download/0.3.0-beta.1/MoneiTapToPay.xcframework.zip",
+      checksum: "32df0991675d5f04ed0a22c3e22a774d7b38388f928508432c6a60143159230e"
     ),
     .binaryTarget(
       name: "CloudCommerce",
-      url: "https://github.com/MONEI/monei-tap-to-pay-ios/releases/download/0.2.0/CloudCommerce.xcframework.zip",
-      checksum: "6148c80bb4372f53a98b7c407f08aaff9b04c1d41bcf60846a50c2f28e21c7cf"
+      url: "https://github.com/MONEI/monei-tap-to-pay-ios/releases/download/0.3.0-beta.1/CloudCommerce.xcframework.zip",
+      checksum: "e4693c22739480ecece5cf2c29962e2afc29dba935af19bb6847e82c012bdcf6"
     ),
   ]
 )
