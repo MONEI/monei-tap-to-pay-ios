@@ -17,6 +17,7 @@
 		64ED0CD15A6BD7C8856B750E /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		695B01BB9D90B9E8A8BE7380 /* TapToPayExample.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = TapToPayExample.entitlements; sourceTree = "<group>"; };
 		C3C88EAB6D7ABB92774A9260 /* monei-tap-to-pay-ios */ = {isa = PBXFileReference; lastKnownFileType = folder; name = "monei-tap-to-pay-ios"; path = ..; sourceTree = SOURCE_ROOT; };
+		A1F3C2D4E5B6978812345678 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		D93F8F14EAC82BB9A665ABF7 /* TapToPayExample.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = TapToPayExample.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -52,6 +53,7 @@
 			isa = PBXGroup;
 			children = (
 				64ED0CD15A6BD7C8856B750E /* ContentView.swift */,
+				A1F3C2D4E5B6978812345678 /* Info.plist */,
 				695B01BB9D90B9E8A8BE7380 /* TapToPayExample.entitlements */,
 				22F5DCDDAAA40808F7447E38 /* TapToPayExampleApp.swift */,
 			);
@@ -147,6 +149,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = TapToPayExample/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "MONEI Example";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Your location is required to accept payments with Tap to Pay on iPhone.";
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -156,6 +159,7 @@
 				);
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.monei.TapToPayExample;
+				PRODUCT_TEAM_IDENTIFIER = "$(DEVELOPMENT_TEAM)";
 				SDKROOT = iphoneos;
 				SWIFT_VERSION = 6.0;
 				TARGETED_DEVICE_FAMILY = 1;
@@ -171,6 +175,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = TapToPayExample/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "MONEI Example";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Your location is required to accept payments with Tap to Pay on iPhone.";
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -180,6 +185,7 @@
 				);
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.monei.TapToPayExample;
+				PRODUCT_TEAM_IDENTIFIER = "$(DEVELOPMENT_TEAM)";
 				SDKROOT = iphoneos;
 				SWIFT_VERSION = 6.0;
 				TARGETED_DEVICE_FAMILY = 1;
