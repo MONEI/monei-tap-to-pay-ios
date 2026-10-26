@@ -17,6 +17,18 @@ This repository contains the Swift package, the release binaries and an example 
 - In your app target:
   - Add the entitlement key `com.apple.developer.proximity-reader.payment.acceptance` with the value `true` to the `.entitlements` file.
   - Add `NSLocationWhenInUseUsageDescription` to `Info.plist`. The SDK needs the location of the device to accept payments.
+  - Add your Apple Team ID to `Info.plist` with the key `PRODUCT_TEAM_IDENTIFIER`. The payment engine uses it to attest your app. Without it, the reader setup fails, and `prepare` and `acceptPayment` throw `paymentFailed`.
+    1. In the build settings of your app target, add a user-defined setting `PRODUCT_TEAM_IDENTIFIER`. Set it to your Apple Team ID (10 characters, in your Apple Developer account under **Membership details**). Use the team that signs the app.
+    2. Add this entry to `Info.plist`:
+
+       ```xml
+       <key>PRODUCT_TEAM_IDENTIFIER</key>
+       <string>$(PRODUCT_TEAM_IDENTIFIER)</string>
+       ```
+
+    If Xcode generates the `Info.plist` of your target (no `Info.plist` file), add an `Info.plist` file with only this entry and set **Info.plist File** (`INFOPLIST_FILE`) to its path. Xcode merges the file with the generated keys. The `INFOPLIST_KEY_` build settings cannot add this key.
+
+    The value must be in the `Info.plist` of the built app. To check, open the `.app` and look at its `Info.plist`.
 - A MONEI account and its API key. A test mode API key gives sandbox tokens.
 - App Store privacy details. Declare these data types in App Store Connect, all for app functionality and not for tracking:
   - Coarse location, not linked to the user (this SDK).
@@ -218,4 +230,4 @@ Use the same Xcode version as "Built with", or a newer one.
 
 ## Example app
 
-`Example/TapToPayExample.xcodeproj` is a SwiftUI app that uses this package. It has a token field, an amount, an order ID, a pay button, education and a result view. Set your team and bundle ID, then run it on a supported iPhone.
+`Example/TapToPayExample.xcodeproj` is a SwiftUI app that uses this package. It has a token field, an amount, an order ID, a pay button, education and a result view. Set your team and bundle ID, then run it on a supported iPhone. The example sets `PRODUCT_TEAM_IDENTIFIER` to `$(DEVELOPMENT_TEAM)`, so the `Info.plist` key gets the team that you set.
