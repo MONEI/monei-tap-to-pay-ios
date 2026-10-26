@@ -17,7 +17,7 @@ This repository contains the Swift package, the release binaries and an example 
 - In your app target:
   - Add the entitlement key `com.apple.developer.proximity-reader.payment.acceptance` with the value `true` to the `.entitlements` file.
   - Add `NSLocationWhenInUseUsageDescription` to `Info.plist`. The SDK needs the location of the device to accept payments.
-  - Add your Apple Team ID to `Info.plist` with the key `PRODUCT_TEAM_IDENTIFIER`. The payment engine uses it to attest your app. Without it, the reader setup fails, and `prepare` and `acceptPayment` throw `paymentFailed`.
+  - Add your Apple Team ID to `Info.plist` with the key `PRODUCT_TEAM_IDENTIFIER`. The payment engine uses it to attest your app. Without it, the reader setup fails.
     1. In the build settings of your app target, add a user-defined setting `PRODUCT_TEAM_IDENTIFIER`. Set it to your Apple Team ID (10 characters, in your Apple Developer account under **Membership details**). Use the team that signs the app.
     2. Add this entry to `Info.plist`:
 
@@ -29,6 +29,7 @@ This repository contains the Swift package, the release binaries and an example 
     If Xcode generates the `Info.plist` of your target (no `Info.plist` file), add an `Info.plist` file with only this entry and set **Info.plist File** (`INFOPLIST_FILE`) to its path. Xcode merges the file with the generated keys. The `INFOPLIST_KEY_` build settings cannot add this key.
 
     The value must be in the `Info.plist` of the built app. To check, open the `.app` and look at its `Info.plist`.
+  - From 0.5.0, the SDK checks these three items on a supported iPhone before it starts the reader. If an item is missing or wrong, `prepare`, `acceptPayment`, `isAccountLinked` and `linkAccount` throw `setupIncomplete(fix:)`. `fix` tells you what to change, for example the Team ID that signs the app. Print the error during development to read it.
 - A MONEI account and its API key. A test mode API key gives sandbox tokens.
 - App Store privacy details. Declare these data types in App Store Connect, all for app functionality and not for tracking:
   - Coarse location, not linked to the user (this SDK).
@@ -108,7 +109,7 @@ The API is `@MainActor`. Call it from the main actor, for example from a SwiftUI
 ```swift
 import MoneiTapToPay
 
-// On launch, and again after each token renewal.
+// Once on launch, and again after each token renewal. A cached token that did not expire is fine.
 func startTapToPay() async {
   guard TapToPay.isSupported else { return } // Hide Tap to Pay on iPhone in your UI.
   do {
@@ -145,7 +146,7 @@ func pay(amountInCents: Int, orderId: String) async {
 | Symbol | Description |
 |---|---|
 | `TapToPay.isSupported: Bool` | `true` when the device supports Tap to Pay on iPhone. |
-| `TapToPay.prepare(token: String) async throws` | Stores the token and prepares the reader in the background. It does not show Apple's terms. It asks for location permission if the user did not answer yet. Call it on launch and after each token renewal. |
+| `TapToPay.prepare(token: String) async throws` | Stores the token and prepares the reader in the background. It does not show Apple's terms. It asks for location permission if the user did not answer yet. Call it once on launch and after each token renewal. The SDK prepares the reader again itself when the app comes back from the background. |
 | `TapToPay.acceptPayment(amount: Int, orderId: String, callbackUrl: URL?) async throws -> PaymentResult` | Takes one card payment. `amount` is in euro cents and must be more than 0. `orderId` is your own reference and must not be empty. |
 | `TapToPay.presentEducation(from: UIViewController) async throws` | Shows Apple's screens that teach how to tap a card. |
 | `TapToPay.isAccountLinked() async throws -> Bool` | From 0.4.0. `true` when the account of the stored token accepted Apple's Tap to Pay on iPhone terms on this device. It never shows the terms. It prepares the reader as `prepare` does. |
@@ -156,14 +157,14 @@ func pay(amountInCents: Int, orderId: String) async {
 
 ### Payment flow
 
-1. Call `prepare` on launch. The token stays in memory only, so call `prepare` again after each launch.
+1. Call `prepare` once on launch. The token stays in memory only, so call `prepare` again after each launch. A cached token that did not expire is fine: then the reader setup starts at once. On the first launch, show your location pre-alert screen before `prepare`, because `prepare` asks for location permission. Apple asks you to explain the permission during onboarding, well before checkout.
 2. Call `acceptPayment` with your own `orderId`. Use a new, non-empty `orderId` for each order. MONEI stores it with the payment, and you use it to reconcile.
 3. The SDK needs a location fix to prepare the reader. The first call after launch that prepares the reader (`prepare`, `acceptPayment`, `isAccountLinked` or `linkAccount`) waits up to 15 seconds for it.
 4. If the account did not accept Apple's Tap to Pay on iPhone terms yet, `acceptPayment` shows them first. Apple asks you to offer the terms before checkout too. See [Accept Apple's terms before checkout](#accept-apples-terms-before-checkout).
 5. Apple shows the tap screen. The customer taps the card.
 6. `acceptPayment` returns a `PaymentResult` or throws a `TapToPayError`.
 
-The SDK prepares the reader again when the app comes back to the foreground. You do not need to do this.
+The SDK prepares the reader again each time the app comes back from the background. You do not need to call `prepare` for this. A system alert or Control Center does not cause a new preparation, because iOS keeps the reader session.
 
 The SDK never retries a payment.
 
@@ -251,7 +252,7 @@ Before Apple gives the publishing entitlement, it reviews your app against its T
 | 1.1 | Support Tap to Pay on iPhone on all supported iPhone models. | `TapToPay.isSupported`. Hide Tap to Pay on iPhone when it is `false`. |
 | 1.2, 1.3 | If Tap to Pay on iPhone is your main payment method: a deployment target and device capabilities that support it. | The SDK needs iOS 18.5. Set your deployment target to iOS 18.5 or later. Set the device capabilities in your app. |
 | 1.4 | Tell the user to update iOS when the iOS version does not support Tap to Pay on iPhone. | The SDK needs iOS 18.5, so your app does not run on the old iOS versions that Apple names. If Apple reports the iOS version as not supported, the calls throw `osUpdateRequired` (from 0.4.0). Tell the user to update iOS. |
-| 1.5 | Prepare Tap to Pay on iPhone at launch and when the app comes to the foreground. | Call `prepare` at launch. The SDK prepares the reader again in the foreground. |
+| 1.5 | Prepare Tap to Pay on iPhone at launch and when the app comes to the foreground. | Call `prepare` once at launch. The SDK prepares the reader again each time the app comes back from the background. |
 | 1.6 | Get the terms status from Apple. Do not store it in your app. | `isAccountLinked()` (from 0.4.0). |
 | 1.7 to 1.9 | Face ID or Touch ID login, Apple's Human Interface Guidelines and marketing guidelines. | Your app. |
 | 2.1 to 2.3 | A digital onboarding in the app that a new merchant can complete quickly on iPhone. | Your app and the MONEI account onboarding. |
@@ -281,7 +282,7 @@ Apple asks for three screen recordings with the entitlement request:
 
 ### Switch statements
 
-The SDK uses library evolution. Its public enums are not frozen. A `switch` over `PaymentResult.Status`, `TapToPayError` or `TapToPayErrorCode` needs an `@unknown default` case. Without it, your app does not compile.
+The SDK uses library evolution. Its public enums are not frozen. A `switch` over `PaymentResult.Status`, `TapToPayError` or `TapToPayErrorCode` needs an `@unknown default` case. New versions can add cases, for example `setupIncomplete` in 0.5.0. Without it, your app does not compile.
 
 ## Errors
 
@@ -290,7 +291,8 @@ All calls throw `TapToPayError`.
 | Error | Thrown by | Meaning | What to do |
 |---|---|---|---|
 | `notSupported` | all calls | The device or iOS version does not support Tap to Pay on iPhone. | Hide Tap to Pay on iPhone. |
-| `locationDenied` | `prepare`, `acceptPayment`, `isAccountLinked`, `linkAccount` | The user did not allow location access, or `Info.plist` has no `NSLocationWhenInUseUsageDescription`. | If the user did not allow access: tell the user to allow location access in Settings, then try again. If the key is missing: add it to `Info.plist` and release a corrected app. |
+| `setupIncomplete(fix:)` | `prepare`, `acceptPayment`, `isAccountLinked`, `linkAccount` | From 0.5.0. The app is not set up for Tap to Pay on iPhone: `NSLocationWhenInUseUsageDescription`, the entitlement or `PRODUCT_TEAM_IDENTIFIER` is missing or wrong. No reader setup started. `fix` tells you what to change. Do not parse it. | Change the app as `fix` tells you, and release a corrected app. The app cannot repair this at run time. Hide Tap to Pay on iPhone, or show that the app is not set up. |
+| `locationDenied` | `prepare`, `acceptPayment`, `isAccountLinked`, `linkAccount` | The user did not allow location access. Before 0.5.0, also: `Info.plist` has no `NSLocationWhenInUseUsageDescription` (from 0.5.0 this gives `setupIncomplete`). | Tell the user to allow location access in Settings, then try again. |
 | `termsDeclined` | `acceptPayment`, `linkAccount` | The user did not accept Apple's terms, or linking failed. | Tell the user that the terms are necessary. The next `linkAccount` or `acceptPayment` shows the terms again. |
 | `invalidArgument` | `acceptPayment` | `amount` is 0 or less, or `orderId` is empty. | Correct the value. |
 | `tokenExpired` | `prepare`, `acceptPayment`, `isAccountLinked`, `linkAccount` | The token expired. | Get a new token from your server. Call `prepare`. Then try again. |
@@ -310,7 +312,7 @@ All calls throw `TapToPayError`.
 | `cardDeclined` | The card was declined during the read. No payment occurred. | Ask for a different card. |
 | `readerNotReady` | The reader session was not ready or expired. | Try again. The SDK prepares the reader again on the next call. |
 | `locationTimeout` | The device did not get a location in 15 seconds. | Make sure that Location Services are on. Then try again. |
-| `readerSetupFailed(reason:)` | `prepare`, `acceptPayment`, `isAccountLinked` or `linkAccount` could not set up the reader before a payment started. No payment occurred. `reason` gives the step and an error code, for example `CONFIGURE_ERROR reader.sdk:ATT019`. It is for your logs and MONEI support. Do not parse it. | Try again. If the error continues, send `reason` to MONEI. |
+| `readerSetupFailed(reason:)` | `prepare`, `acceptPayment`, `isAccountLinked` or `linkAccount` could not set up the reader before a payment started. No payment occurred. `reason` gives the step and an error code, for example `CONFIGURE_ERROR NSURLErrorDomain:-1001`. It is for your logs and MONEI support. Do not parse it. | Try again. If the error continues, send `reason` to MONEI. |
 | `unknown` | The payment did not start. No payment occurred. | Try again. If the error continues, contact MONEI. |
 
 A `PaymentResult` with status `.declined` is not an error. The card was read and the issuer declined the payment. The payment is in MONEI with its `paymentId`.
