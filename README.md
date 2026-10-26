@@ -51,7 +51,7 @@ In `Package.swift`:
 
 ```swift
 dependencies: [
-  .package(url: "https://github.com/MONEI/monei-tap-to-pay-ios", exact: "0.3.0")
+  .package(url: "https://github.com/MONEI/monei-tap-to-pay-ios", exact: "0.4.0")
 ],
 targets: [
   .target(name: "YourApp", dependencies: [
@@ -329,6 +329,7 @@ Releases from `0.1.0-beta.4` have a signed `MoneiTapToPay` binary (team `72J3PXJ
 
 | SDK version | iOS minimum | Built with | Notes |
 |---|---|---|---|
+| `0.4.0` | 18.5 | Xcode 26.6 (Swift 6.3.3) | New public API for Apple's review requirements: `isAccountLinked()` and `linkAccount()` (accept Apple's terms before checkout), `readerState` and `readerStates()` (configuration progress and initializing view), and `TapToPayError.osUpdateRequired`. A `switch` on `TapToPayError` with no `@unknown default` does not compile. |
 | `0.3.0` | 18.5 | Xcode 26.6 (Swift 6.3.3) | New `TapToPayErrorCode.readerSetupFailed(reason:)`: a reader setup failure gives the step and an error code, not `unknown`. Code that matches `.paymentFailed(code: .unknown)` does not catch it. A `switch` with no `@unknown default` does not compile. |
 | `0.2.0` | 18.5 | Xcode 26.6 (Swift 6.3.3) | `PaymentResult` has new fields: `amount`, `currency`, `statusCode`, `statusMessage`, `authorizationCode`, `cardType`, `cardCountry`. A declined result shows the reason without a call to MONEI. No change to existing fields. |
 | `0.1.1` | 18.5 | Xcode 26.6 (Swift 6.3.3) | Install without a GitHub token: public download URLs. Same SDK code as `0.1.0`. |
