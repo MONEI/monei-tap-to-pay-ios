@@ -51,7 +51,7 @@ In `Package.swift`:
 
 ```swift
 dependencies: [
-  .package(url: "https://github.com/MONEI/monei-tap-to-pay-ios", exact: "0.2.0")
+  .package(url: "https://github.com/MONEI/monei-tap-to-pay-ios", exact: "0.3.0")
 ],
 targets: [
   .target(name: "YourApp", dependencies: [
@@ -201,6 +201,7 @@ All calls throw `TapToPayError`.
 | `cardDeclined` | The card was declined during the read. No payment occurred. | Ask for a different card. |
 | `readerNotReady` | The reader session was not ready or expired. | Try again. The SDK prepares the reader again on the next call. |
 | `locationTimeout` | The device did not get a location in 15 seconds. | Make sure that Location Services are on. Then try again. |
+| `readerSetupFailed(reason:)` | `prepare` or `acceptPayment` could not set up the reader before a payment started. No payment occurred. `reason` gives the step and an error code, for example `CONFIGURE_ERROR reader.sdk:ATT019`. It is for your logs and MONEI support. Do not parse it. | Try again. If the error continues, send `reason` to MONEI. |
 | `unknown` | The payment did not start. No payment occurred. | Try again. If the error continues, contact MONEI. |
 
 A `PaymentResult` with status `.declined` is not an error. The card was read and the issuer declined the payment. The payment is in MONEI with its `paymentId`.
@@ -219,6 +220,7 @@ Releases from `0.1.0-beta.4` have a signed `MoneiTapToPay` binary (team `72J3PXJ
 
 | SDK version | iOS minimum | Built with | Notes |
 |---|---|---|---|
+| `0.3.0` | 18.5 | Xcode 26.6 (Swift 6.3.3) | New `TapToPayErrorCode.readerSetupFailed(reason:)`: a reader setup failure gives the step and an error code, not `unknown`. Code that matches `.paymentFailed(code: .unknown)` does not catch it. A `switch` with no `@unknown default` does not compile. |
 | `0.2.0` | 18.5 | Xcode 26.6 (Swift 6.3.3) | `PaymentResult` has new fields: `amount`, `currency`, `statusCode`, `statusMessage`, `authorizationCode`, `cardType`, `cardCountry`. A declined result shows the reason without a call to MONEI. No change to existing fields. |
 | `0.1.1` | 18.5 | Xcode 26.6 (Swift 6.3.3) | Install without a GitHub token: public download URLs. Same SDK code as `0.1.0`. |
 | `0.1.0` | 18.5 | Xcode 26.6 (Swift 6.3.3) | First release. Signed. Same code as `0.1.0-beta.5`. |
