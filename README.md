@@ -234,8 +234,8 @@ struct TapToPayStateView: View {
 
 | State | Meaning |
 |---|---|
-| `notReady` | The reader is not set up: no `prepare` yet, the account did not accept Apple's terms, the last setup failed, or MONEI blocked this SDK version. The next call that needs the reader sets it up or throws. |
-| `preparing(progress:)` | The reader is being set up, or the SDK sets it up again at the next call, for example after the app comes back to the foreground. `progress` is 0 to 100 while the device downloads its configuration. Show a determinate indicator. When `progress` is `nil`, show an indeterminate indicator. |
+| `notReady` | No setup runs, and the reader is not ready: no `prepare` yet, the account did not accept Apple's terms, the last setup failed, the session must be set up again (for example after the app was in the background), or MONEI blocked this SDK version. The next call that needs the reader sets it up or throws. |
+| `preparing(progress:)` | A setup of the reader runs now. `progress` is 0 to 100 while the device downloads its configuration. Then show a determinate indicator. When `progress` is `nil`, show an indeterminate indicator. |
 | `ready` | The reader is ready. `acceptPayment` opens Apple's screen at once. |
 
 - Each call gets its own stream. A stream ends when its task is cancelled or the stream is released, as with a SwiftUI `.task`. A `break` out of the loop alone does not end a stream that you still hold.
