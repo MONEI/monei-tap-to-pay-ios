@@ -7,6 +7,7 @@ This repository contains the Swift package, the release binaries and an example 
 ## Requirements
 
 - iOS 18.5 or later, on an iPhone XS or newer. `TapToPay.isSupported` is `false` on other devices.
+- A passcode on the iPhone. The payment engine needs it to keep its credentials safe, and Tap to Pay on iPhone also needs it. Face ID or Touch ID is not necessary. Without a passcode, the reader setup fails. If a device management (MDM) solution manages your iPhones, add a passcode policy to it. From 0.7.0, the calls throw `passcodeRequired` when the iPhone has no passcode.
 - Xcode 26.6 or newer.
 - The Tap to Pay on iPhone entitlement from Apple, for each app that takes payments. Request it with Apple's [entitlement request form](https://developer.apple.com/contact/request/tap-to-pay-on-iphone/):
   1. Request the development entitlement for your team. You need it before you can test on a device.
@@ -292,6 +293,7 @@ All calls throw `TapToPayError`.
 |---|---|---|---|
 | `notSupported` | all calls | The device or iOS version does not support Tap to Pay on iPhone. | Hide Tap to Pay on iPhone. |
 | `setupIncomplete(fix:)` | `prepare`, `acceptPayment`, `isAccountLinked`, `linkAccount` | From 0.5.0. The app is not set up for Tap to Pay on iPhone: `NSLocationWhenInUseUsageDescription`, the entitlement or `PRODUCT_TEAM_IDENTIFIER` is missing or wrong. No reader setup started. `fix` tells you what to change. Do not parse it. | Change the app as `fix` tells you, and release a corrected app. The app cannot repair this at run time. Hide Tap to Pay on iPhone, or show that the app is not set up. |
+| `passcodeRequired` | `prepare`, `acceptPayment`, `isAccountLinked`, `linkAccount` | From 0.7.0. The iPhone has no passcode. No reader setup started. No payment occurred. `prepare` keeps the token. | Tell the user to set a passcode in **Settings > Face ID & Passcode** (or **Touch ID & Passcode**). On an iPhone that a device management (MDM) solution manages, the administrator adds a passcode policy. The SDK checks again on each call: after the user sets a passcode, the next call works with no new `prepare`. |
 | `locationDenied` | `prepare`, `acceptPayment`, `isAccountLinked`, `linkAccount` | The user did not allow location access. Before 0.5.0, also: `Info.plist` has no `NSLocationWhenInUseUsageDescription` (from 0.5.0 this gives `setupIncomplete`). | Tell the user to allow location access in Settings, then try again. |
 | `termsDeclined` | `acceptPayment`, `linkAccount` | The user did not accept Apple's terms, or linking failed. | Tell the user that the terms are necessary. The next `linkAccount` or `acceptPayment` shows the terms again. |
 | `invalidArgument` | `acceptPayment` | `amount` is 0 or less, or `orderId` is empty. | Correct the value. |
