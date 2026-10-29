@@ -53,7 +53,7 @@ In `Package.swift`:
 
 ```swift
 dependencies: [
-  .package(url: "https://github.com/MONEI/monei-tap-to-pay-ios", exact: "0.6.0")
+  .package(url: "https://github.com/MONEI/monei-tap-to-pay-ios", exact: "0.7.0")
 ],
 targets: [
   .target(name: "YourApp", dependencies: [
@@ -333,6 +333,7 @@ Releases from `0.1.0-beta.4` have a signed `MoneiTapToPay` binary (team `72J3PXJ
 
 | SDK version | iOS minimum | Built with | Notes |
 |---|---|---|---|
+| `0.7.0` | 18.5 | Xcode 26.6 (Swift 6.3.3) | New `TapToPayError.passcodeRequired`: the public calls check that the iPhone has a passcode and throw this error before the reader starts. A `switch` on `TapToPayError` with no `@unknown default` does not compile. |
 | `0.6.0` | 18.5 | Xcode 26.6 (Swift 6.3.3) | New version of the payment engine. No change to the public API. |
 | `0.5.0` | 18.5 | Xcode 26.6 (Swift 6.3.3) | New `TapToPayError.setupIncomplete(fix:)`: the public calls check the app setup (location usage text, Tap to Pay entitlement, `PRODUCT_TEAM_IDENTIFIER` present and equal to the signing team) and give the exact fix. The SDK prepares the reader again by itself after the app returns from the background. A `switch` on `TapToPayError` with no `@unknown default` does not compile. |
 | `0.4.0` | 18.5 | Xcode 26.6 (Swift 6.3.3) | New public API for Apple's review requirements: `isAccountLinked()` and `linkAccount()` (accept Apple's terms before checkout), `readerState` and `readerStates()` (configuration progress and initializing view), and `TapToPayError.osUpdateRequired`. A `switch` on `TapToPayError` with no `@unknown default` does not compile. |
